@@ -183,10 +183,29 @@ final class BrowserSession implements Session
         }
         $this->page = $page;
         $page->navigate('https://web.whatsapp.com/', $this->options->effectiveBrowserTimeoutSeconds());
-        $page->waitForFunction(
-            'globalThis.__pamWhatsAppBridgeState === 2 || globalThis.__pamWhatsAppBridgeState === 3',
-            $this->options->effectiveAuthenticationTimeoutSeconds(),
-        );
+        try {
+            $page->waitForFunction(
+                'globalThis.__pamWhatsAppBridgeState === 2 || globalThis.__pamWhatsAppBridgeState === 3',
+                $this->options->effectiveAuthenticationTimeoutSeconds(),
+            );
+        } catch (\Throwable $e) {
+            foreach ([
+                'url' => 'location.href',
+                'title' => 'document.title',
+                'readyState' => 'document.readyState',
+                'bridgeState' => 'globalThis.__pamWhatsAppBridgeState',
+                'body' => 'document.body?.innerText?.slice(0, 1000)',
+            ] as $name => $expression) {
+                try {
+                    $value = $page->evaluate($expression);
+                    fwrite(STDERR, "[DEBUG] $name: ".json_encode($value, JSON_UNESCAPED_UNICODE).PHP_EOL);
+                } catch (\Throwable $debugError) {
+                    fwrite(STDERR, "[DEBUG] $name: ".$debugError->getMessage().PHP_EOL);
+                }
+            }
+
+            throw $e;
+        }
 
         $state = $page->evaluate('globalThis.__pamWhatsAppBridgeState');
         if ($state !== 2) {
