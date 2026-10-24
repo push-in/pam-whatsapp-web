@@ -102,6 +102,7 @@ final class BrowserSession implements Session
         }
 
         $this->listener = $listener;
+        $bridgeInstallError = null;
         while (true) {
             $authenticationHandshake = new AuthenticationHandshake($this->authStrategy);
             $authenticationRejected = false;
@@ -144,8 +145,14 @@ final class BrowserSession implements Session
                 $authenticationHandshake,
                 &$authenticationRejected,
                 &$restartRequested,
+                &$bridgeInstallError,
             ): void {
                 $event = BridgeEvent::fromValue($value);
+                if ($event->type === EventType::Error
+                    && is_string($event->payload['message'] ?? null)
+                ) {
+                    $bridgeInstallError = $event->payload['message'];
+                }
                 $decision = $authenticationHandshake->inspect($event->type);
                 if ($decision?->failed === true) {
                     $authenticationRejected = true;
@@ -183,7 +190,10 @@ final class BrowserSession implements Session
 
         $state = $page->evaluate('globalThis.__pamWhatsAppBridgeState');
         if ($state !== 2) {
-            throw new BridgeException('WhatsApp Web bridge failed during installation.');
+            $detail = is_string($bridgeInstallError) && $bridgeInstallError !== ''
+                ? ' '.$bridgeInstallError
+                : '';
+            throw new BridgeException('WhatsApp Web bridge failed during installation.'.$detail);
         }
         if ($cachedHtml === null && $receivedHtml !== null && $webCache !== null) {
             $version = $page->evaluate('globalThis.Debug?.VERSION ?? null');
