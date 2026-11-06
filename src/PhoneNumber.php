@@ -14,6 +14,9 @@ final readonly class PhoneNumber
         if (!is_string($digits) || strlen($digits) < 7 || strlen($digits) > 15) {
             throw new \InvalidArgumentException('Phone number must contain 7 to 15 digits including country code.');
         }
+        if ($digits[0] === '0') {
+            throw new \InvalidArgumentException('Phone number must start with the country code, without a leading zero.');
+        }
 
         $this->digits = $digits;
     }
