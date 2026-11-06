@@ -453,16 +453,31 @@ final class BridgeScript
 
     const install = async () => {
         for (let attempt = 0; attempt < 1200; attempt += 1) {
-            if (globalThis.Debug?.VERSION !== undefined && typeof globalThis.require === 'function') break;
+            if (globalThis.Debug?.VERSION !== undefined && typeof globalThis.require === 'function') {
+                try {
+                    const socketModel = globalThis.require('WAWebSocketModel');
+                    const connModel = globalThis.require('WAWebConnModel');
+                    const collections = globalThis.require('WAWebCollections');
+                    if (socketModel?.Socket && connModel?.Conn && collections?.Msg && collections?.Chat) break;
+                } catch {
+                    // WhatsApp Web exposes its module loader before all module aliases are ready.
+                }
+            }
             await sleep(50);
         }
         if (globalThis.Debug?.VERSION === undefined || typeof globalThis.require !== 'function') {
             throw new Error('WhatsApp Web modules did not become available.');
         }
+        const socketModel = globalThis.require('WAWebSocketModel');
+        const connModel = globalThis.require('WAWebConnModel');
+        const collections = globalThis.require('WAWebCollections');
+        if (!socketModel?.Socket || !connModel?.Conn || !collections?.Msg || !collections?.Chat) {
+            throw new Error(`WhatsApp Web core modules did not become available (version ${globalThis.Debug.VERSION}).`);
+        }
 
-        const Socket = globalThis.require('WAWebSocketModel').Socket;
-        const Conn = globalThis.require('WAWebConnModel').Conn;
-        const { Msg, Chat } = globalThis.require('WAWebCollections');
+        const { Socket } = socketModel;
+        const { Conn } = connModel;
+        const { Msg, Chat } = collections;
         const lookupMessage = async (messageId) => Msg.get(messageId)
             ?? (await Msg.getMessagesById([messageId]))?.messages?.[0]
             ?? null;

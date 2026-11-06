@@ -211,6 +211,14 @@ final class ClientTest extends TestCase
         self::assertSame(['5511999999999'], $session->lastArguments['getNumberId']);
     }
 
+    public function testPhoneNumberRejectsALeadingZero(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('without a leading zero');
+
+        new PhoneNumber('(081) 99999-9999');
+    }
+
     public function testPhoneNumberRejectsInvalidInput(): void
     {
         $this->expectException(\InvalidArgumentException::class);

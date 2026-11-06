@@ -2,6 +2,14 @@
 
 All notable changes to PAM WhatsApp Web will be documented here.
 
+## Unreleased
+
+- Reject phone numbers with a leading zero with a clear error instead of an
+  opaque `InvalidWidError` from WhatsApp Web, since a country code never starts
+  with zero.
+- Wait for WhatsApp Web core modules before installing the bridge, and report
+  the installation error in the exception.
+
 ## 1.2.0 - 2026-08-26
 
 - Add a complete README cookbook with a working PHP example for every row in
