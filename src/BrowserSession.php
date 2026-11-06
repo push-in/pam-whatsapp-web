@@ -194,7 +194,6 @@ final class BrowserSession implements Session
                 'title' => 'document.title',
                 'readyState' => 'document.readyState',
                 'bridgeState' => 'globalThis.__pamWhatsAppBridgeState',
-                'body' => 'document.body?.innerText?.slice(0, 1000)',
             ] as $name => $expression) {
                 try {
                     $value = $page->evaluate($expression);
