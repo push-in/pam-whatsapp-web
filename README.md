@@ -1,50 +1,39 @@
 <div align="center">
 
-# PAM WhatsApp Web
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg">
+  <img src=".github/assets/banner-light.svg" width="880" alt="pam-whatsapp-web: The whatsapp-web.js experience in persistent, pure PHP. No Node.js, no Puppeteer.">
+</picture>
 
-### The `whatsapp-web.js` experience, now in persistent, pure PHP.
+**The `whatsapp-web.js` experience, now in persistent, pure PHP.**<br>
+Terminal QR · persistent sessions · real-time events · media · groups · channels · calls. PAM keeps the process alive, [PAM Browser](https://github.com/push-in/pam-browser) speaks the Chrome DevTools Protocol, and this library provides the typed API: no Node.js, npm, Puppeteer or Playwright in production.
 
-[![PHP 8.5+](https://img.shields.io/badge/PHP-8.5%2B-777BB4?logo=php&logoColor=white)](https://github.com/push-in/pam)
-[![PAM Runtime](https://img.shields.io/badge/runtime-PAM-20C997)](https://github.com/push-in/pam)
-[![Packagist](https://img.shields.io/packagist/v/pushinbr/pam-whatsapp-web?color=25c2a0)](https://packagist.org/packages/pushinbr/pam-whatsapp-web)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Packagist](https://img.shields.io/packagist/v/pushinbr/pam-whatsapp-web?label=packagist&color=f53003)](https://packagist.org/packages/pushinbr/pam-whatsapp-web)
+[![Latest release](https://img.shields.io/github/v/release/push-in/pam-whatsapp-web?label=release&color=e3a008)](https://github.com/push-in/pam-whatsapp-web/releases/latest)
+![PHP 8.5](https://img.shields.io/badge/php-8.5-777bb4)
+[![License](https://img.shields.io/github/license/push-in/pam-whatsapp-web?color=1f6feb)](LICENSE)
 
-**Terminal QR · persistent sessions · real-time events · media · groups · channels · calls**
-
-[Start here](#start-here) · [Features](#whats-included) · [Compatibility](#compatibility) · [Safety](#responsible-use)
+[Install](#install) · [Quick example](#quick-example) · [Features](#whats-included) · [Compatibility](#compatibility) · [Safety](#responsible-use) · [Cookbook](docs/supported-features.md)
 
 </div>
 
-A typed API for controlling WhatsApp Web directly from PHP. PAM keeps the
-process alive, `pam-browser` communicates with Chrome/Chromium through the
-Chrome DevTools Protocol, and this library provides the familiar
-`whatsapp-web.js` surface — without Node.js, npm, Puppeteer, or Playwright in
-production.
+<a id="install"></a>
+## <picture><img src=".github/assets/icons/terminal.svg" width="22" height="22" alt=""></picture> Install
 
-## Start here
+Create a PAM project and add the library:
 
-### 1. Install PAM
-
-```bash
-curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
-    --connect-timeout 15 --max-time 60 --max-filesize 1048576 -fsSL \
-    https://github.com/push-in/pam/releases/latest/download/install.sh | sh
-
-pam doctor
+```sh
+pam init my-whatsapp --template raw
+cd my-whatsapp
+pam composer require pushinbr/pam-whatsapp-web
 ```
 
-### 2. Create your project and install the library
+Chrome or Chromium must be installed on the host. No JavaScript runtime is required. New to PAM? Install it from [push-in/pam](https://github.com/push-in/pam#install) and run `pam doctor` first.
 
-```bash
-mkdir my-whatsapp && cd my-whatsapp
-pam composer init --no-interaction
-pam composer require pushinbr/pam-whatsapp-web:^1.0
-```
+<a id="quick-example"></a>
+## <picture><img src=".github/assets/icons/code.svg" width="22" height="22" alt=""></picture> Quick example
 
-Chrome or Chromium must be installed on the host. No JavaScript runtime is
-required.
-
-### 3. Create `listen.php`
+Create `listen.php`:
 
 ```php
 <?php
@@ -89,20 +78,21 @@ $client->initialize();
 $client->run();
 ```
 
-### 4. Run it
-
-```bash
-pam listen.php
-```
-
-On the first run, a scannable QR code appears in the terminal. After scanning,
-the client connects automatically and starts printing inbound messages.
-Authentication is stored in `.sessions/`; subsequent runs restore the session
-without another QR code. Never publish this directory or share its contents.
+Run it with `pam listen.php`. On the first run, a scannable QR code appears in the terminal. After scanning, the client connects automatically and starts printing inbound messages. Authentication is stored in `.sessions/`; subsequent runs restore the session without another QR code. Never publish this directory or share its contents.
 
 > The complete runnable program is available at [`examples/listen.php`](examples/listen.php).
 
-## What's included
+<a id="platform-support"></a>
+## <picture><img src=".github/assets/icons/grid.svg" width="22" height="22" alt=""></picture> Platform support
+
+| Platform | Support | Notes |
+| --- | --- | --- |
+| PAM runtime host | Chrome or Chromium installed | Driven through [PAM Browser](https://github.com/push-in/pam-browser) (`pushinbr/pam-browser` `^1.0`) |
+| PHP | 8.5+ | `ext-mbstring`; from `composer.json` |
+| whatsapp-web.js | 1.34.7 | Reference commit `942d236`, from `api-matrix.json` |
+
+<a id="whats-included"></a>
+## <picture><img src=".github/assets/icons/sparkle.svg" width="22" height="22" alt=""></picture> What's included
 
 | Area | Features |
 |---|---|
@@ -114,7 +104,10 @@ without another QR code. Never publish this directory or share its contents.
 | WhatsApp | presence, connection state, calls, channels, labels, business profiles, products, and orders |
 | API | typed objects, integer-backed enums, immutable events, PHPStan level 9, and an automated parity matrix |
 
-### Reply to a message
+<a id="common-tasks"></a>
+## <picture><img src=".github/assets/icons/chat.svg" width="22" height="22" alt=""></picture> Common tasks
+
+#### Reply to a message
 
 ```php
 $client->onMessage(static function (MessageReceived $event): void {
@@ -124,7 +117,7 @@ $client->onMessage(static function (MessageReceived $event): void {
 });
 ```
 
-### Send messages and manage chats
+#### Send messages and manage chats
 
 ```php
 $client->sendMessage('15551234567@c.us', 'Hello directly from PHP!');
@@ -151,7 +144,7 @@ $message = $client->sendMessageToNumber(
 Retries are opt-in because retrying an ambiguous send failure can produce a
 duplicate. The default is one attempt.
 
-### Send media with one call
+#### Send media with one call
 
 ```php
 $client->sendImageToNumber('+55 11 99999-9999', __DIR__.'/photo.jpg', 'Photo caption');
@@ -160,7 +153,7 @@ $client->sendDocumentToNumber('+55 11 99999-9999', __DIR__.'/invoice.pdf');
 $client->sendStickerToNumber('+55 11 99999-9999', __DIR__.'/sticker.webp', 'Pack name', 'Author');
 ```
 
-### Observe delivery
+#### Observe delivery
 
 ```php
 $client->onMessageSent(fn ($event) => printf("Sent: %s\n", $event->message->id));
@@ -172,7 +165,7 @@ $client->onMessageFailed(fn ($event) => printf("Failed: %s\n", $event->message->
 These convenience events are derived from the typed upstream acknowledgement
 event. `on(EventType::MessageAcknowledged, ...)` remains available unchanged.
 
-### Reconnection, diagnostics, and logs
+#### Reconnection, diagnostics, and logs
 
 ```php
 use Pam\WhatsApp\ClientOptions;
@@ -197,370 +190,7 @@ Automatic reconnect is disabled by default to preserve existing production
 behavior. Logout and QR retry exhaustion are never reconnected automatically.
 `Client::reconnect()` is available after a closed or failed session.
 
-### Upstream supported-feature status
-
-Every feature currently marked ✅ in the upstream `whatsapp-web.js` README is
-represented by the typed PHP API: Multi Device, send/receive messages, all
-listed media formats, stickers, contact cards, locations, replies, group
-administration, mentions, chat mute, contact block, contact/profile operations,
-status, reactions, polls, and channels.
-
-Buttons and list messages are deprecated and marked ❌ upstream. Their PHP types
-remain for source compatibility, but successful delivery is not guaranteed.
-Communities are marked 🔜 upstream and are not advertised as a completed
-feature here.
-
-## Complete supported-feature cookbook
-
-The examples below mirror every row in the upstream Supported features table.
-They assume an initialized, ready `$client`; IDs such as `$chatId`, `$groupId`,
-and `$messageId` must come from your own account. The machine-readable mapping
-is [`supported-features.json`](supported-features.json).
-
-Import the classes used by the recipes you copy:
-
-```php
-use Pam\WhatsApp\Button;
-use Pam\WhatsApp\Buttons;
-use Pam\WhatsApp\Chat;
-use Pam\WhatsApp\ContactList;
-use Pam\WhatsApp\CreateChannelOptions;
-use Pam\WhatsApp\GroupChat;
-use Pam\WhatsApp\GroupMentionSend;
-use Pam\WhatsApp\ListMessage;
-use Pam\WhatsApp\Location;
-use Pam\WhatsApp\LocationSendOptions;
-use Pam\WhatsApp\MessageSendOptions;
-use Pam\WhatsApp\Poll;
-use Pam\WhatsApp\Event\MessageReceived;
-```
-
-<!-- feature:multi-device -->
-### Multi Device ✅
-
-Persist the linked-device profile so subsequent starts reconnect without a new QR:
-
-```php
-$client = new Client(new ClientOptions(
-    authStrategy: new LocalAuth(new LocalAuthOptions('main', __DIR__.'/.sessions')),
-));
-$client->initialize();
-$client->run();
-```
-
-<!-- feature:send-messages -->
-### Send messages ✅
-
-```php
-$client->sendMessageToNumber('+55 (11) 99999-9999', "Hello!\nSecond line.");
-$client->sendMessage($chatId, 'Hello using a resolved chat ID.');
-```
-
-<!-- feature:receive-messages -->
-### Receive messages ✅
-
-```php
-$client->onMessage(static function (MessageReceived $event): void {
-    printf("%s: %s\n", $event->message->from, $event->message->body);
-});
-```
-
-<!-- feature:send-media-image-audio-document -->
-### Send images, audio, and documents ✅
-
-```php
-$client->sendImageToNumber($phone, __DIR__.'/photo.jpg', 'A photo');
-$client->sendAudioToNumber($phone, __DIR__.'/voice.ogg', asVoiceNote: true);
-$client->sendDocumentToNumber($phone, __DIR__.'/invoice.pdf', 'Invoice');
-```
-
-<!-- feature:send-media-video -->
-### Send video ✅
-
-Video sending requires Google Chrome, matching the upstream requirement:
-
-```php
-$client->sendVideoToNumber($phone, __DIR__.'/demo.mp4', 'Demo video');
-$client->sendVideoToNumber($phone, __DIR__.'/animation.mp4', asGif: true);
-```
-
-<!-- feature:send-stickers -->
-### Send stickers ✅
-
-```php
-$client->sendStickerToNumber($phone, __DIR__.'/sticker.webp', 'My pack', 'My app');
-```
-
-Video-to-sticker conversion uses the `ffmpegPath` configured in `ClientOptions`.
-
-<!-- feature:receive-media -->
-### Receive images, audio, video, and documents ✅
-
-```php
-$client->onMessage(static function (MessageReceived $event): void {
-    $message = $event->message;
-    if (!$message->hasMedia) return;
-
-    $media = $message->downloadMedia();
-    if ($media !== null) {
-        $binary = base64_decode($media->data, true);
-        if ($binary !== false) {
-            file_put_contents(__DIR__.'/download.bin', $binary);
-        }
-    }
-});
-```
-
-Use `downloadMediaStream()` for large files, as shown later in this README.
-
-<!-- feature:send-contact-cards -->
-### Send contact cards ✅
-
-```php
-$contact = $client->getContactById('5511999999999@c.us');
-$client->sendMessage($chatId, new ContactList([$contact]));
-```
-
-<!-- feature:send-location -->
-### Send location ✅
-
-```php
-$location = new Location(
-    -23.5505,
-    -46.6333,
-    new LocationSendOptions(name: 'São Paulo', address: 'SP, Brazil'),
-);
-$client->sendMessage($chatId, $location);
-```
-
-<!-- feature:send-buttons -->
-### Send buttons ❌ deprecated upstream
-
-WhatsApp deprecated this format. The type remains for source compatibility, but
-delivery is not guaranteed and new applications should not depend on it:
-
-```php
-$legacy = new Buttons('Choose an option', [new Button('Continue', 'continue')]);
-$client->sendMessage($chatId, $legacy); // May be rejected by current WhatsApp builds.
-```
-
-<!-- feature:send-lists -->
-### Send lists ❌ deprecated upstream
-
-```php
-$legacy = new ListMessage('Choose a product', 'Open list', [[
-    'title' => 'Products',
-    'rows' => [['id' => 'coffee', 'title' => 'Coffee']],
-]]);
-$client->sendMessage($chatId, $legacy); // May be rejected by current WhatsApp builds.
-```
-
-<!-- feature:receive-location -->
-### Receive location ✅
-
-```php
-$client->onMessage(static function (MessageReceived $event): void {
-    $location = $event->message->location;
-    if ($location !== null) {
-        printf("Coordinates: %f, %f\n", $location->latitude, $location->longitude);
-    }
-});
-```
-
-<!-- feature:message-replies -->
-### Reply to messages ✅
-
-```php
-$client->onMessage(static function (MessageReceived $event): void {
-    $event->message->reply('Thanks for your message!');
-});
-```
-
-<!-- feature:join-groups-by-invite -->
-### Join groups by invite ✅
-
-Pass only the invite code, not the complete URL:
-
-```php
-$groupId = $client->acceptInvite('AbCdEfGhIjKlMnOpQrStUv');
-```
-
-<!-- feature:get-group-invite -->
-### Get a group invite ✅
-
-```php
-$group = $client->getChatById($groupId);
-if ($group instanceof GroupChat) {
-    $inviteCode = $group->getInviteCode();
-}
-```
-
-<!-- feature:modify-group-info -->
-### Modify group subject and description ✅
-
-```php
-if ($group instanceof GroupChat) {
-    $group->setSubject('Customer community');
-    $group->setDescription('Support and product announcements');
-}
-```
-
-<!-- feature:modify-group-settings -->
-### Modify group settings ✅
-
-```php
-if ($group instanceof GroupChat) {
-    $group->setMessagesAdminsOnly(true);
-    $group->setInfoAdminsOnly(true);
-    $group->setAddMembersAdminsOnly(true);
-}
-```
-
-<!-- feature:add-group-participants -->
-### Add group participants ✅
-
-```php
-if ($group instanceof GroupChat) {
-    $result = $group->addParticipants(['5511999999999@c.us']);
-}
-```
-
-<!-- feature:kick-group-participants -->
-### Remove group participants ✅
-
-```php
-if ($group instanceof GroupChat) {
-    $result = $group->removeParticipants(['5511999999999@c.us']);
-}
-```
-
-<!-- feature:promote-demote-participants -->
-### Promote and demote group participants ✅
-
-```php
-if ($group instanceof GroupChat) {
-    $group->promoteParticipants(['5511999999999@c.us']);
-    $group->demoteParticipants(['5511999999999@c.us']);
-}
-```
-
-<!-- feature:mention-users -->
-### Mention users ✅
-
-```php
-$client->sendMessage(
-    $chatId,
-    'Hello @5511999999999',
-    new MessageSendOptions(mentions: ['5511999999999@c.us']),
-);
-```
-
-<!-- feature:mention-groups -->
-### Mention groups ✅
-
-```php
-$client->sendMessage(
-    $chatId,
-    'See @Support',
-    new MessageSendOptions(groupMentions: [
-        new GroupMentionSend('Support', '120363000000000000@g.us'),
-    ]),
-);
-```
-
-<!-- feature:mute-unmute-chats -->
-### Mute and unmute chats ✅
-
-```php
-$chat = $client->getChatById($chatId);
-if ($chat instanceof Chat) {
-    $chat->mute(new DateTimeImmutable('+1 hour'));
-    $chat->unmute();
-}
-```
-
-<!-- feature:block-unblock-contacts -->
-### Block and unblock contacts ✅
-
-```php
-$contact = $client->getContactById('5511999999999@c.us');
-$contact->block();
-$contact->unblock();
-```
-
-<!-- feature:get-contact-info -->
-### Get contact information ✅
-
-```php
-$contact = $client->getContactById('5511999999999@c.us');
-printf("%s (%s)\n", $contact->name, $contact->id->serialized);
-```
-
-<!-- feature:get-profile-pictures -->
-### Get profile pictures ✅
-
-```php
-$url = $client->getProfilePicUrl('5511999999999@c.us');
-```
-
-<!-- feature:set-user-status -->
-### Set the user status message ✅
-
-```php
-$client->setStatus('Available — powered by PAM');
-```
-
-<!-- feature:react-to-messages -->
-### React to messages ✅
-
-```php
-$message = $client->getMessageById($messageId);
-$message?->react('👍');
-```
-
-<!-- feature:create-polls -->
-### Create polls ✅
-
-```php
-$poll = new Poll('Where should we have lunch?', ['Pizza', 'Sushi', 'Salad']);
-$client->sendMessage($chatId, $poll);
-```
-
-<!-- feature:channels -->
-### Channels ✅
-
-```php
-$channels = $client->getChannels();
-$created = $client->createChannel('Product news', new CreateChannelOptions(
-    description: 'Release announcements',
-));
-if (isset($channels[0])) {
-    $channels[0]->sendMessage('A new version is available!');
-}
-```
-
-<!-- feature:vote-in-polls -->
-### Vote in polls ✅
-
-```php
-$pollMessage = $client->getMessageById($messageId);
-$pollMessage?->vote(['Pizza']); // Select one or more options by name.
-```
-
-<!-- feature:communities -->
-### Communities 🔜 planned upstream
-
-The upstream library does not yet advertise Communities as supported, so this
-package intentionally does not claim a complete Communities API. You can inspect
-the experimental WhatsApp Web feature flag without treating it as support:
-
-```php
-$availableInThisWebBuild = $client->interface?->checkFeatureStatus('communities') ?? false;
-```
-
-This flag does not provide community creation or administration guarantees.
-
-### Download large media without exhausting memory
+#### Download large media without exhausting memory
 
 ```php
 use Pam\WhatsApp\MediaStreamOptions;
@@ -576,7 +206,24 @@ if ($media !== null) {
 }
 ```
 
-## Compatibility
+<a id="supported-features"></a>
+## <picture><img src=".github/assets/icons/star.svg" width="22" height="22" alt=""></picture> Upstream supported-feature status
+
+Every feature currently marked ✅ in the upstream `whatsapp-web.js` README is
+represented by the typed PHP API: Multi Device, send/receive messages, all
+listed media formats, stickers, contact cards, locations, replies, group
+administration, mentions, chat mute, contact block, contact/profile operations,
+status, reactions, polls, and channels.
+
+Buttons and list messages are deprecated and marked ❌ upstream. Their PHP types
+remain for source compatibility, but successful delivery is not guaranteed.
+Communities are marked 🔜 upstream and are not advertised as a completed
+feature here.
+
+A working PHP example for every row of the upstream Supported features table is in the **[supported-feature cookbook](docs/supported-features.md)**; the machine-readable mapping is [`supported-features.json`](supported-features.json).
+
+<a id="compatibility"></a>
+## <picture><img src=".github/assets/icons/flask.svg" width="22" height="22" alt=""></picture> Compatibility
 
 The current release tracks `whatsapp-web.js` `1.34.7` at reference commit
 `942d236a11ad68807308b058303ba5256915979c`. Coverage is auditable in
@@ -593,7 +240,8 @@ Live certification is split between an unauthenticated QR smoke test and an
 authenticated suite with explicit mutation guards. See
 [`CERTIFICATION.md`](CERTIFICATION.md).
 
-## Architecture
+<a id="architecture"></a>
+## <picture><img src=".github/assets/icons/layers.svg" width="22" height="22" alt=""></picture> Architecture
 
 ```text
 your PHP code
@@ -608,14 +256,32 @@ PAM Browser ─────── Chrome DevTools Protocol
 Chrome / Chromium ─ WhatsApp Web
 ```
 
-## Responsible use
+<a id="responsible-use"></a>
+## <picture><img src=".github/assets/icons/shield.svg" width="22" height="22" alt=""></picture> Responsible use
 
 This is an unofficial, community-maintained library. WhatsApp may change its
 internal modules without notice and may restrict or block accounts that violate
 its terms. Avoid spam and abusive automation. For officially supported
 integrations and critical workloads, use Meta's WhatsApp Business Platform.
 
-## License
+<a id="docs"></a>
+## <picture><img src=".github/assets/icons/book.svg" width="22" height="22" alt=""></picture> Docs
 
-Open source under the [Apache License 2.0](LICENSE). You may use, modify, and
-distribute it, including commercially.
+- [Supported-feature cookbook](docs/supported-features.md)
+- [Certification](CERTIFICATION.md)
+- [Release process](RELEASE.md)
+- [Changelog](CHANGELOG.md)
+- [Report an issue](https://github.com/push-in/pam-whatsapp-web/issues)
+
+<a id="pam-ecosystem"></a>
+## <picture><img src=".github/assets/icons/plug.svg" width="22" height="22" alt=""></picture> Part of the PAM ecosystem
+
+PAM runs PHP natively on servers, desktops and phones. This repository is one piece of it.
+
+| [**PAM**](https://github.com/push-in/pam) | [**PAM Desktop**](https://github.com/push-in/pam-desktop) | [**PAM Native**](https://github.com/push-in/pam-native) | [**Ecosystem**](https://github.com/push-in/pam#ecosystem) |
+| --- | --- | --- | --- |
+| the runtime and CLI | native desktop apps in PHP | native Android and iOS apps in PHP | every official package and plugin |
+
+<sub>Docs: [push-in.github.io/pam-docs](https://push-in.github.io/pam-docs/introduction/) · [Issues](https://github.com/push-in/pam-whatsapp-web/issues)</sub>
+
+<p align="center"><sub>Open source under the <a href="LICENSE">Apache License 2.0</a>: use, modify and distribute it, including commercially · Made in Brazil by Pushin</sub></p>

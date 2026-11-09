@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 final class SupportedFeaturesTest extends TestCase
 {
-    public function testEveryUpstreamFeatureHasARealApiAndReadmeExample(): void
+    public function testEveryUpstreamFeatureHasARealApiAndDocumentedExample(): void
     {
         $root = dirname(__DIR__, 2);
         $json = file_get_contents($root.'/supported-features.json');
-        $readme = file_get_contents($root.'/README.md');
+        $readme = file_get_contents($root.'/docs/supported-features.md');
         self::assertIsString($json);
         self::assertIsString($readme);
 
@@ -45,7 +45,7 @@ final class SupportedFeaturesTest extends TestCase
             self::assertMatchesRegularExpression(
                 '/<!-- feature:'.preg_quote($id, '/').' -->(?:(?!<!-- feature:).)*```php\s.+?```/s',
                 $readme,
-                "Feature {$id} has no PHP example in README.md.",
+                "Feature {$id} has no PHP example in docs/supported-features.md.",
             );
 
             if ($status === SupportedFeatureStatus::Supported->value) {
